@@ -8,7 +8,7 @@
 
 A little browser extension I made for JUST students.
 
-<a href="https://microsoftedge.microsoft.com/addons/detail/rattibha-learn/iilhiloojalebkoohdebcecoknpocdih">
+<a href="https://microsoftedge.microsoft.com/addons/detail/rattibha-learn/iilhiloojalebkoohdebcecoknpocdih" target="_blank" rel="noopener noreferrer">
   <img src="https://raw.githubusercontent.com/MicrosoftDocs/edge-developer/main/microsoft-edge/extensions/publish/add-ons-badge-images/microsoft-edge-add-ons-badge.png" alt="Get it from Microsoft Edge" height="58">
 </a>
 
