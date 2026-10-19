@@ -1,0 +1,25 @@
+const assert=require('node:assert/strict');
+const vm=require('node:vm');
+const fs=require('node:fs');
+const script=fs.readFileSync(require('node:path').join(__dirname,'../background.js'),'utf8');
+let callback=null;
+const called=[];
+const sandbox={URL,chrome:{runtime:{onMessage:{addListener(fn){callback=fn;}}},downloads:{download:async options=>{called.push(options);return 42;}}}};
+vm.runInNewContext(script,sandbox);
+const request=(msg,sender)=>new Promise((resolve,reject)=>{let done=false;
+ const keep=callback(msg,sender,response=>{done=true;resolve(response);});
+ if(!keep&&!done)reject(new Error('listener did not keep asynchronous response channel alive'));
+ setTimeout(()=>{if(!done)reject(new Error('timeout'));},300);
+});
+(async()=>{
+  const ok=await request({type:'RATTIBHA_DOWNLOAD',url:'https://staroceans.org/example.pdf',filename:'Course.pdf'},{url:'https://elearn.just.edu.jo/current/course/view.php?id=1'});
+  assert.equal(ok.ok,true);assert.equal(ok.id,42);
+  assert.equal(called.length,1);assert.equal(called[0].saveAs,false);
+  assert.equal(called[0].conflictAction,'uniquify');
+  assert.equal(called[0].url,'https://staroceans.org/example.pdf');
+  const no=await request({type:'RATTIBHA_DOWNLOAD',url:'https://staroceans.org/example.pdf'}, {url:'https://another.example.com/'});
+  assert.equal(no.ok,false);assert.equal(called.length,1);
+  const unsafe=await request({type:'RATTIBHA_DOWNLOAD',url:'javascript:alert(1)'}, {url:'https://elearn.just.edu.jo/'});
+  assert.equal(unsafe.ok,false);assert.equal(called.length,1);
+  console.log('Worker downloads use saveAs=false, enforce allowed sender, and reject unsafe URLs: OK');
+})().catch(e=>{console.error(e);process.exitCode=1;});

@@ -1,9 +1,10 @@
 {
   "manifest_version": 3,
-  "name": "Rattibha Learn — JUST eLearning",
-  "version": "0.3.0",
-  "description": "A clean, student-first interface for JUST Moodle. Uses your existing login and keeps official Moodle actions intact.",
+  "name": "rattibha learn",
+  "version": "0.11.0",
+  "description": "A smoother, simpler JUST eLearning companion for courses, messages, tasks and focus.",
   "permissions": [
+    "downloads",
     "storage"
   ],
   "host_permissions": [
@@ -12,9 +13,22 @@
   "content_scripts": [
     {
       "matches": [
+        "https://elearn.just.edu.jo/current/my/courses.php*",
+        "https://elearn.just.edu.jo/current/course/view.php*"
+      ],
+      "js": [
+        "preflight.js"
+      ],
+      "run_at": "document_start"
+    },
+    {
+      "matches": [
         "https://elearn.just.edu.jo/current/*"
       ],
       "js": [
+        "vendor/jszip.min.js",
+        "pdf-generator.js",
+        "file-tools.js",
         "content.js"
       ],
       "run_at": "document_idle"
@@ -23,7 +37,9 @@
   "web_accessible_resources": [
     {
       "resources": [
-        "styles.css"
+        "styles.css",
+        "icons/mark.svg",
+        "icons/mark-white.svg"
       ],
       "matches": [
         "https://elearn.just.edu.jo/*"
@@ -38,5 +54,8 @@
   "action": {
     "default_title": "Rattibha Learn",
     "default_popup": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js"
   }
 }
