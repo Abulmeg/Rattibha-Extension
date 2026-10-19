@@ -1,48 +1,55 @@
+<div align="center">
+
+<img src="icons/128.png" alt="Rattibha Learn" width="82">
+
 # Rattibha Learn
 
-A better way to use JUST eLearning.
+**JUST eLearning, without all the digging around.**
 
-I got tired of digging through course pages just to find one lecture or announcement, so I started making the eLearning experience I'd actually want to use. Same JUST account, same courses, just less clicking around.
+A little browser extension I made for JUST students.
 
-[![Install on Microsoft Edge](https://img.shields.io/badge/Install_on-Microsoft_Edge-1769AA?style=for-the-badge&logo=microsoftedge&logoColor=white)](https://microsoftedge.microsoft.com/addons/detail/rattibha-learn/iilhiloojalebkoohdebcecoknpocdih)
+<a href="https://microsoftedge.microsoft.com/addons/detail/rattibha-learn/iilhiloojalebkoohdebcecoknpocdih">
+  <img src="https://raw.githubusercontent.com/MicrosoftDocs/edge-developer/main/microsoft-edge/extensions/publish/add-ons-badge-images/microsoft-edge-add-ons-badge.png" alt="Get it from Microsoft Edge" height="58">
+</a>
 
-**Using Chrome or Opera GX?** [Install it manually](#chrome--opera-gx) for now.
+</div>
 
-## What's in it?
+---
 
-- **Courses:** your subjects, sections, weekly files and announcements in one place.
-- **Files:** read PDFs without leaving the page, or download other materials.
-- **Chats:** your eLearning messages, right where you need them.
-- **Study stuff:** tasks, a focus timer, and recently opened files.
-- **Convert:** quick, local document-to-PDF conversion.
-- Light/dark themes and a few colors to make it yours.
+I got tired of jumping between courses and scrolling through weeks just to find one file. Rattibha Learn puts the stuff I actually use on eLearning in one cleaner place.
 
-## Install
+Same university account, same materials. Just a nicer way to get to them.
 
-**Microsoft Edge:** Just use the button above.
+### What's in it?
 
-### Chrome / Opera GX
+- **Courses & sections** — find your courses, switch sections, and search through materials.
+- **File previews** — open PDFs on the page instead of collecting a hundred tabs.
+- **Chats** — see your eLearning messages without going back to the old interface.
+- **Tasks & focus** — a to-do list and a study timer.
+- **Convert** — turn supported documents into PDFs right in your browser.
+- **Make it yours** — dark mode, light mode, and accent colors.
 
-It's not on the Chrome Web Store yet, but you can try it now:
+### Getting it
 
-1. Click **Code → Download ZIP** at the top of this GitHub page.
-2. Extract the ZIP.
-3. Open `chrome://extensions` (or `opera://extensions` for Opera GX).
-4. Enable **Developer mode**, then click **Load unpacked**.
-5. Pick the extracted folder containing `manifest.json`.
+**Microsoft Edge:** Hit the badge above. That's it.
 
-Now open [JUST eLearning](https://elearn.just.edu.jo/current/my/courses.php) and sign in as usual.
+**Chrome / Opera GX:** You can install it manually for now:
 
-Manual installs won't update automatically. To get a newer version, download it here again and reload the extension.
+1. Click **Code → Download ZIP** on this page and extract it.
+2. Go to `chrome://extensions` (Opera GX: `opera://extensions`).
+3. Enable **Developer mode** and click **Load unpacked**.
+4. Select the extracted folder containing `manifest.json`.
 
-## Help out
+Open [JUST eLearning](https://elearn.just.edu.jo/current/my/courses.php) and sign in normally.
 
-Something broken? Got an idea? [Open an issue](https://github.com/Abulmeg/Rattibha-Extension/issues). Pull requests are welcome too — see [CONTRIBUTING.md](CONTRIBUTING.md).
+<sub>Manual installs don't update automatically. Download the latest code here and reload the extension when you want to update.</sub>
 
-Please blur names, student IDs, messages and grades if you share screenshots.
+### Want to help?
 
-This is a side project, so some Moodle pages may still behave differently. Quizzes, grades and submissions remain on the original JUST website. PDF conversion is handy for studying, but it isn't a perfect replacement for Office.
+If something breaks or you have an idea, [open an issue](https://github.com/Abulmeg/Rattibha-Extension/issues). PRs are welcome too — it'd be cool to have more JUST students working on it.
 
-Built with JavaScript, HTML and CSS. No separate login, no build step. [Privacy](PRIVACY.md) · [MIT License](LICENSE)
+It's a student project and still a work in progress. Some course activities are better opened on the original website, and document conversion won't always preserve complex formatting.
 
-Made by [Abulmeg](https://github.com/Abulmeg) for JUST students. Not an official university extension.
+Made by [Abulmeg](https://github.com/Abulmeg) · [Contributing](CONTRIBUTING.md) · [Privacy](PRIVACY.md) · [MIT License](LICENSE)
+
+<sub>Not an official JUST extension.</sub>
