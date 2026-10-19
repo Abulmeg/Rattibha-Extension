@@ -1,16 +1,16 @@
 # Contributing
 
-Thanks for taking a look at Rattibha Learn.
+If you use JUST eLearning and something feels off, I'd love to hear about it.
 
-If you have a problem, open an issue and describe what you expected and what actually happened. Include the browser you're using and which kind of page it happened on (course list, weekly materials, PDF, chat, etc.). Please don't share private student information or session details.
+**Found a bug?** Open an issue and mention your browser, the page you were on, what you clicked, and what happened. You can attach a screenshot, just hide names, student IDs, messages, grades and login details.
 
-For code changes:
+**Want to fix or add something?**
 
-1. Fork the repository and make a branch for your change.
-2. Keep the changes focused. This project is intentionally small and doesn't need a new framework for every feature.
-3. Load the extension unpacked and test the pages you changed. Run the relevant scripts in `tests/` if you can.
-4. Open a pull request explaining what changed and how you checked it.
+1. Fork the repo and work on a branch.
+2. Keep changes small and easy to understand.
+3. Test them by loading the extension with **Load unpacked**. Run any relevant tests in `tests/` too.
+4. Open a pull request explaining what changed.
 
-I want the extension to stay quick, readable, and useful on the real JUST eLearning site. If you add a feature, try to keep it simple enough that students won't need instructions to find it.
+It's plain JavaScript, HTML and CSS. I'd like to keep it fast and easy to work on, so no big framework or new dependency unless it genuinely helps.
 
-For security or privacy issues, please contact the maintainer privately instead of posting student data or exploit details in a public issue.
+For security issues, contact me privately through [GitHub](https://github.com/Abulmeg) instead of posting sensitive details in a public issue.

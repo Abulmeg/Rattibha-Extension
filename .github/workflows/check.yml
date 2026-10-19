@@ -1,0 +1,39 @@
+name: Check extension
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check JavaScript syntax
+        run: |
+          for file in background.js content.js file-tools.js pdf-generator.js popup.js preflight.js; do
+            node --check "$file"
+          done
+
+      - name: Check manifest files
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          manifest = json.loads(Path("manifest.json").read_text(encoding="utf-8"))
+          assert manifest["manifest_version"] == 3
+          referenced = [manifest["action"]["default_popup"], manifest["background"]["service_worker"]]
+          referenced += manifest["icons"].values()
+          for script in manifest["content_scripts"]:
+              referenced += script["js"]
+          for resource in manifest.get("web_accessible_resources", []):
+              referenced += resource["resources"]
+          for path in referenced:
+              assert Path(path).is_file(), f"Missing manifest file: {path}"
+          print("Manifest references are OK.")
+          PY

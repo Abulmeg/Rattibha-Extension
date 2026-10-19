@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "rattibha learn",
+  "name": "Rattibha Learn",
   "version": "0.11.0",
-  "description": "A smoother, simpler JUST eLearning companion for courses, messages, tasks and focus.",
+  "description": "A cleaner way to use JUST eLearning: courses, files, chats and study tools.",
   "permissions": [
     "downloads",
     "storage"
