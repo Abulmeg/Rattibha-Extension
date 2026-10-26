@@ -79,13 +79,12 @@
     if (blob.size > 180 * 1024 * 1024) throw new Error('This file is too large for browser conversion (180 MB limit).');
     const fromHeader = dispositionName(response.headers.get('content-disposition') || '');
     const fileInfo = normalizeName(fromHeader || defaultName(response.url || source, label), mime, label);
-    if (fileInfo.type === 'ppt') throw new Error('Older .ppt files need to be saved as .pptx first. The extension cannot safely convert legacy PowerPoint files offline.');
     if (fileInfo.type === 'pdf') {
       const outputName = fileInfo.name.replace(/\.pdf$/i,'') + '.pdf';
       return { pdf: blob, outputName };
     }
-    if (!['pptx','docx'].includes(fileInfo.type)) {
-      throw new Error('Only DOCX and PPTX can be converted directly. Older PPT files require PPTX.');
+    if (!['pptx','docx','ppt'].includes(fileInfo.type)) {
+      throw new Error('Only PPT, PPTX and DOCX can be converted directly.');
     }
     const filename = fileInfo.name.replace(/\.(docx|pptx|ppt|pdf)$/i, '') + '.' + fileInfo.type;
     return { file: new File([blob], filename, {type: mime || blob.type}) };
@@ -167,7 +166,7 @@
       button.type = 'button';
       button.className = 'rl-native-pdf';
       button.textContent = '↓ PDF';
-      button.title = 'Download as PDF — converted on your device';
+      button.title = typeFor(address, context) === 'ppt' ? 'Download PPT as text-based PDF (images and original layout may differ)' : 'Download as PDF — converted on your device';
       button.setAttribute('aria-label','Download ' + (link.textContent.trim() || 'document') + ' as PDF');
       const status = document.createElement('span');
       status.className = 'rl-native-pdf-status';

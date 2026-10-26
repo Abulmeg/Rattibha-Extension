@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Rattibha Learn",
-  "version": "0.12.0",
-  "description": "Find JUST eLearning files faster and download DOCX/PPTX materials as PDFs directly from courses.",
+  "version": "0.13.0",
+  "description": "Simpler JUST eLearning with one-click PDF downloads for PPT, PPTX and DOCX files.",
   "permissions": [
     "downloads",
     "storage"
@@ -28,6 +28,7 @@
       "js": [
         "vendor/jszip.min.js",
         "pdf-generator.js",
+        "legacy-ppt.js",
         "file-tools.js",
         "inline-pdf.js",
         "content.js"

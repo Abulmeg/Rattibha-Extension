@@ -233,7 +233,7 @@
   }
   async function exportPdf(result, onProgress) {
     if(!result||result.kind==='pdf')throw new Error('Choose a DOCX, PPTX or text file first.');
-    const slideDeck=result.kind==='pptx';
+    const slideDeck=result.kind==='pptx'||result.kind==='ppt';
     const pages=slideDeck?renderSlides(result):await renderDocument(result);
     return assemble(pages,result.title||'Document',slideDeck?result.slides.length:pages.length,onProgress);
   }

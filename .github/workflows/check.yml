@@ -15,7 +15,7 @@ jobs:
 
       - name: Check JavaScript syntax
         run: |
-          for file in background.js content.js file-tools.js pdf-generator.js inline-pdf.js popup.js preflight.js; do
+          for file in background.js content.js file-tools.js pdf-generator.js legacy-ppt.js inline-pdf.js popup.js preflight.js; do
             node --check "$file"
           done
 

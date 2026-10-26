@@ -32,3 +32,8 @@ Earlier versions focused on making course lists and materials easier to use.
 - Added direct PDF shortcuts beside supported Office documents in course materials and the original Moodle interface.
 - Simplified converter labels, course guidance, and extension popup.
 - PDF conversion stays on-device; older binary PPT files require PPTX.
+
+## 0.13.0
+- Reads PowerPoint 97–2003 `.ppt` locally without asking students to convert to PPTX first.
+- PDF shortcut now works for PPT, PPTX and DOCX in native and Rattibha course views.
+- Legacy PPT PDF exports preserve slide text and sequence, not original artwork or animations.

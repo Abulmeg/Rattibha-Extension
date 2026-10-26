@@ -129,19 +129,23 @@
   function blobDownload(blob,name) {
     const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;a.style.display='none';document.documentElement.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);
   }
-  const options = ext => ext==='docx'||ext==='pptx' ? [
-    {value:'txt',label:'Plain text (.txt)'},{value:'html',label:'Web page (.html)'},...(ext==='pptx'?[{value:'docx',label:'Word notes (.docx · text only)'}]:[]),{value:'pdf',label:'PDF document (.pdf)'}
+  const options = ext => ext==='docx'||ext==='pptx'||ext==='ppt' ? [
+    {value:'txt',label:'Plain text (.txt)'},{value:'html',label:'Web page (.html)'},...(['pptx','ppt'].includes(ext)?[{value:'docx',label:'Word notes (.docx · text only)'}]:[]),{value:'pdf',label:'PDF document (.pdf)'}
   ] : ext==='txt'||ext==='md' ? [{value:'docx',label:'Word document (.docx)'},{value:'html',label:'Web page (.html)'},{value:'pdf',label:'PDF document (.pdf)'}] : [];
   const read = async (file, options = {}) => {
     const ext=file.name.toLowerCase().split('.').pop();
     if(ext==='docx')return docx(file);
     if(ext==='pptx')return pptx(file,options.onProgress);
+    if(ext==='ppt'){
+      if(!globalThis.RLLegacyPpt)throw new Error('Legacy PowerPoint reader could not load. Reload the extension.');
+      return globalThis.RLLegacyPpt.read(file,options.onProgress);
+    }
     if(ext==='txt'||ext==='md'){
       if(file.size>10*1024*1024)throw new Error('File is too large.');
       const text=await file.text();return {kind:ext,title:filename(file.name),text,html:`<article style="white-space:pre-wrap" dir="auto">${escape(text)}</article>`};
     }
     if(ext==='pdf')return {kind:'pdf',title:filename(file.name),html:'',text:''};
-    throw new Error('Supported inputs: DOCX, PPTX, TXT and Markdown.');
+    throw new Error('Supported inputs: DOCX, PPTX, legacy PPT, TXT and Markdown.');
   };
   const release = result => { for(const url of result?.mediaUrls||[]) URL.revokeObjectURL(url); };
   const offlineHtml = async result => {
