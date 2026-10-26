@@ -12,6 +12,7 @@ html='''<body><h1>CPE451-Introduction to Embedded Systems (All Sections)</h1><di
 <li class="activity"><a href="https://elearn.just.edu.jo/current/mod/resource/view.php?id=54">Samples.zip</a></li>
 <li class="activity"><a href="https://elearn.just.edu.jo/current/mod/resource/view.php?id=55">Lecture handout</a></li>
 <li class="activity"><a href="https://elearn.just.edu.jo/current/mod/page/view.php?id=56">More details</a></li>
+<li class="activity"><div class="activity-item modtype_folder"><strong>Supplementary folder</strong><div class="foldertree"><a href="/current/pluginfile.php/55/mod_folder/content/0/Week%203/supplement.pptx">supplement.pptx</a><a href="/current/pluginfile.php/55/mod_folder/content/0/Week%203/Notes.pdf">Notes.pdf</a></div></div></li>
 </section></div></body>'''
 
 async def main():
@@ -38,7 +39,9 @@ async def main():
   await page.wait_for_timeout(350)
   root=page.locator('#rattibha-learn-root')
   rows=root.locator('.resource-row')
-  assert await rows.count()==6,(errors,await page.locator('body').inner_text())
+  assert await rows.count()==8,(errors,await page.locator('body').inner_text())
+  assert await rows.get_by_text('Supplementary folder / supplement.pptx').count()==1
+  assert await rows.get_by_text('Supplementary folder / Notes.pdf').count()==1
   await rows.get_by_text('2nd Edition').click()
   frame=root.locator('iframe.pdf-frame')
   await frame.wait_for(state='attached')

@@ -331,6 +331,29 @@
       const wrappers=[...node.querySelectorAll('[data-for="cmitem"],li.activity,.activity-item,.activity,.activity-wrapper,.activity-label')]
         .filter(item=>!item.parentElement?.closest('[data-for="cmitem"],li.activity,.activity-item,.activity,.activity-wrapper'));
       for(const item of wrappers){
+        // Moodle supports folders expanded directly in the course section.
+        // If there is no regular folder activity link, expose ALL of its files,
+        // not just the first pluginfile anchor as though it were the folder.
+        const inlineFolder=item.querySelector('.foldertree,.folder-container,.foldercontent,[data-region="folderfiles"]');
+        const folderActivity=[...item.querySelectorAll('a[href*="/mod/folder/view.php"]')].find(link=>{
+          try {return !new URL(link.href,sourceUrl).searchParams.has('download');}catch{return false;}
+        });
+        if(inlineFolder&&!folderActivity){
+          const parentTitle=visibleText(item.querySelector('.instancename,.activityname,.foldername'))||'Folder';
+          const links=[...inlineFolder.querySelectorAll('a[href]')];
+          let added=0;
+          for(const link of links){
+            const href=validUrl(link.getAttribute('href'),sourceUrl);
+            if(!href||seen.has(href))continue;
+            let filename='';
+            try {filename=decodeURIComponent(new URL(href).pathname.split('/').pop()||'');}catch{}
+            if(!/pluginfile\.php|\/[^/]+\.[a-z0-9]{1,8}$/i.test(new URL(href).pathname))continue;
+            const label=visibleText(link)||filename||'File';
+            seen.add(href);added++;
+            resources.push({name:parentTitle+' / '+label,href,type:typeFrom(href,filename||label),content:''});
+          }
+          if(added)continue;
+        }
         let anchors=[...item.querySelectorAll('.activityname a[href],.activityinstance a[href],a.aalink[href],a[href*="/mod/"],a[href*="pluginfile.php"]')];
         if(!anchors.length)anchors=[...item.querySelectorAll('a[href]')].filter(a=>/\/(mod|pluginfile|h5p)\/|pluginfile\.php/i.test(a.getAttribute('href')||''));
         const a=anchors.find(a=>!a.closest('[hidden],.accesshide,.sr-only'))||anchors[0];
