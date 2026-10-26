@@ -26,3 +26,9 @@
 - Added messaging and refreshed the logo and interface.
 
 Earlier versions focused on making course lists and materials easier to use.
+
+
+## 0.12.0
+- Added direct PDF shortcuts beside supported Office documents in course materials and the original Moodle interface.
+- Simplified converter labels, course guidance, and extension popup.
+- PDF conversion stays on-device; older binary PPT files require PPTX.

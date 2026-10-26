@@ -26,6 +26,7 @@ Same university account, same materials. Just a nicer way to get to them.
 - **File previews** — open PDFs on the page instead of collecting a hundred tabs.
 - **Chats** — see your eLearning messages without going back to the old interface.
 - **Tasks & focus** — a to-do list and a study timer.
+- **One-click PDF** — save DOCX and PPTX course files as PDFs using a button beside the material, without a manual re-upload.
 - **Convert** — turn supported documents into PDFs right in your browser.
 - **Make it yours** — dark mode, light mode, and accent colors.
 
@@ -48,7 +49,7 @@ Open [JUST eLearning](https://elearn.just.edu.jo/current/my/courses.php) and sig
 
 If something breaks or you have an idea, [open an issue](https://github.com/Abulmeg/Rattibha-Extension/issues). PRs are welcome too — it'd be cool to have more JUST students working on it.
 
-It's a student project and still a work in progress. Some course activities are better opened on the original website, and document conversion won't always preserve complex formatting.
+It's a student project and still a work in progress. Some course activities are better opened on the original website. PDF conversion runs locally and may not preserve complex formatting. Older `.ppt` files need to be re-saved as `.pptx` first; no student documents are sent to a conversion service.
 
 Made by [Abulmeg](https://github.com/Abulmeg) · [Contributing](CONTRIBUTING.md) · [Privacy](PRIVACY.md) · [MIT License](LICENSE)
 

@@ -91,3 +91,6 @@ footer {
   nav a { transition: none; }
   nav a:hover, nav a:active { transform: none; }
 }
+
+.popup-help{font-size:12px;line-height:1.55;color:var(--muted);margin:-7px 0 15px}
+.popup-help strong{color:var(--accent)}
