@@ -161,6 +161,7 @@
       const context = (link.textContent || '') + ' ' + (link.title || '') + ' ' + (wrap?.querySelector('.instancename')?.textContent || '');
       if (!typeFor(address, context)) continue;
       if (/\/mod\/(?:quiz|assign|forum)\//.test(new URL(address).pathname)) continue;
+      if (/\/mod\/(?!resource\/)[a-z0-9_]+\//i.test(new URL(address).pathname)) continue;
       link.dataset.rlPdfChecked = '1';
       const button = document.createElement('button');
       button.type = 'button';

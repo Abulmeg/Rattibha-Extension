@@ -15,9 +15,12 @@ jobs:
 
       - name: Check JavaScript syntax
         run: |
-          for file in background.js content.js file-tools.js pdf-generator.js legacy-ppt.js inline-pdf.js popup.js preflight.js; do
+          for file in background.js content.js file-tools.js pdf-generator.js legacy-ppt.js inline-pdf.js moodle-materials.js popup.js preflight.js; do
             node --check "$file"
           done
+
+      - name: Test material routing
+        run: node --test tests/test_materials.cjs
 
       - name: Check manifest files
         run: |

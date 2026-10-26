@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Rattibha Learn",
-  "version": "0.13.0",
-  "description": "Simpler JUST eLearning with one-click PDF downloads for PPT, PPTX and DOCX files.",
+  "version": "0.14.0",
+  "description": "JUST eLearning with browsable folders, file previews and Office-to-PDF downloads.",
   "permissions": [
     "downloads",
     "storage"
@@ -31,6 +31,7 @@
         "legacy-ppt.js",
         "file-tools.js",
         "inline-pdf.js",
+        "moodle-materials.js",
         "content.js"
       ],
       "run_at": "document_idle"

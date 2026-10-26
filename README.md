@@ -26,6 +26,7 @@ Same university account, same materials. Just a nicer way to get to them.
 - **File previews** — open PDFs on the page instead of collecting a hundred tabs.
 - **Chats** — see your eLearning messages without going back to the old interface.
 - **Tasks & focus** — a to-do list and a study timer.
+- **Folders & files** — open Moodle folders and nested subfolders, preview PDFs and media, and download individual files or a ZIP when Moodle permits it.
 - **One-click PDF** — save PPT (1997–2003), PPTX and DOCX course files as PDFs using a button beside the material, without manually downloading and re-uploading.
 - **Convert** — turn supported documents into PDFs right in your browser.
 - **Make it yours** — dark mode, light mode, and accent colors.

@@ -37,3 +37,9 @@ Earlier versions focused on making course lists and materials easier to use.
 - Reads PowerPoint 97–2003 `.ppt` locally without asking students to convert to PPTX first.
 - PDF shortcut now works for PPT, PPTX and DOCX in native and Rattibha course views.
 - Legacy PPT PDF exports preserve slide text and sequence, not original artwork or animations.
+
+## 0.14.0
+- Browse Moodle folders and nested folder files in Rattibha, including optional ZIP download.
+- Keep Moodle Page content and its links visible, instead of opening the first attached file automatically.
+- Preview supported images, audio and video. Download other files and open interactive Moodle activities natively.
+- Add folder filters, resource-type handling and PDF shortcuts within folders.

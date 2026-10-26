@@ -33,6 +33,7 @@ async def main():
     if(s.includes('id=56'))return wrap('<main id="region-main"><p>Useful lecture materials:</p><a href="/current/pluginfile.php/99/topic.pdf">PDF notes</a> <a href="https://example.org/references.docx">Reference</a></main>');
     return new Response('Not found',{status:404});
   };''')
+  await page.add_script_tag(path=str(base/'moodle-materials.js'))
   await page.add_script_tag(content=js)
   await page.wait_for_timeout(350)
   root=page.locator('#rattibha-learn-root')
@@ -72,9 +73,13 @@ async def main():
   print('PDF MIME loaded in viewer: OK')
   await rows.get_by_text('More details').click()
   await page.wait_for_timeout(120)
-  # Page with an associated PDF is correctly resolved instead of showing dead 'Click on...'.
+  # Page preserves content, and its PDF hyperlink is still usable.
+  assert await root.locator('.document-text').count()==1
+  assert await root.locator('.document-text a[href*="topic.pdf"]').count()==1
+  await root.locator('.document-text a[href*="topic.pdf"]').click()
+  await page.wait_for_timeout(150)
   assert await root.locator('iframe.pdf-frame').count()==1
-  print('Relative links on resource pages resolved against fetched page: OK')
+  print('Moodle Page preserves links and selected PDF opens: OK')
   assert not errors,errors
   await browser.close()
 asyncio.run(main())

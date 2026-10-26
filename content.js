@@ -115,7 +115,7 @@
   // Allow only simple readable formatting and safe links from the authenticated university page.
   function safeRichHtml(root, baseUrl = location.href) {
     if(!root)return '';
-    const allowed=new Set(['p','div','span','strong','b','em','i','u','br','ul','ol','li','h2','h3','h4','blockquote','a','table','tbody','tr','td','th','pre','code']);
+    const allowed=new Set(['p','div','span','strong','b','em','i','u','br','ul','ol','li','h2','h3','h4','blockquote','a','img','table','tbody','tr','td','th','pre','code']);
     const ignored=new Set(['script','style','svg','iframe','form','button','input','select','textarea','noscript']);
     const walk=node=>{
       if(node.nodeType===3)return esc(node.textContent||'');
@@ -125,6 +125,10 @@
       const content=[...node.childNodes].map(walk).join('');
       if(!allowed.has(tag))return content;
       if(tag==='br')return '<br>';
+      if(tag==='img'){
+        const src=validUrl(node.getAttribute('src'),baseUrl);
+        return src?'<img src="'+esc(src)+'" alt="'+esc(node.getAttribute('alt')||'Course image')+'" loading="lazy">':'';
+      }
       if(tag==='a'){
         const href=validUrl(node.getAttribute('href'),baseUrl);
         return href?`<a href="${esc(href)}" rel="noopener noreferrer" target="_blank">${content||esc(href)}</a>`:content;
@@ -167,6 +171,7 @@
   const getFavorite = id => state.favorites.includes(id);
   const safeLink = (href, label, cls = '') => href ? `<a class="${cls}" href="${esc(href)}">${label}</a>` : `<span>${label}</span>`;
   const typeFrom = (href, title) => {
+    if(globalThis.RLMoodleMaterials)return RLMoodleMaterials.classify(href,title);
     const txt = `${href} ${title}`.toLowerCase();
     if (/assign|assignment|mod\/assign/.test(txt)) return 'Assignment';
     if (/mod\/quiz|\bquiz\b|exam/.test(txt)) return 'Quiz';
@@ -175,7 +180,7 @@
     if (/mod\/url|youtube|video/.test(txt)) return 'Link';
     return 'Resource';
   };
-  const typeIcon = type => ({Assignment:'clipboard',Quiz:'checkcircle',Forum:'book',Link:'link',File:'file',Resource:'file'}[type] || 'file');
+  const typeIcon = type => ({Assignment:'clipboard',Quiz:'checkcircle',Forum:'book',Link:'link',File:'file',Folder:'folder',Page:'book',Book:'book',Image:'image',Media:'play',Resource:'file'}[type] || 'file');
   const timerRemaining = () => {
     if (!state.focus) return (state.focusMode==='short'?5:state.focusMode==='long'?15:state.duration) * 60;
     return state.focus.endAt ? Math.max(0, Math.ceil((state.focus.endAt - Date.now()) / 1000)) : state.focus.left;
@@ -617,12 +622,13 @@
     const starred=state.starredResources.includes(key);
     const type=r.type;
     const canPreview=hasHref || !!r.content;
-    const downloadsOnClick=hasHref&&(isDownloadFile(r.href)||/\.(docx?|pptx?|xlsx?|zip|rar|7z|odt|odp|ods|rtf|txt)$/i.test(r.name));
-    const officeKind=hasHref && globalThis.RLInlinePdf?.typeFor(r.href,r.name);
+    const downloadsOnClick=hasHref&&(isDownloadFile(r.href)||(r.type==='File'&&/\.(docx?|pptx?|xlsx?|zip|rar|7z|odt|odp|ods|rtf|txt)$/i.test(r.name)));
+    const openNative=hasHref&&globalThis.RLMoodleMaterials?.isNative(r.type);
+    const officeKind=hasHref && (!globalThis.RLMoodleMaterials||r.type==='File') && globalThis.RLInlinePdf?.typeFor(r.href,r.name);
     const pdfButton=officeKind?`<button class="resource-save-pdf" type="button" data-action="resource-pdf" data-url="${esc(r.href)}" data-name="${esc(r.name)}" title="${officeKind==='ppt'?'Legacy PPT to PDF: slide text preserved; graphics may differ':'Download as PDF without leaving this course'}" aria-label="Download ${esc(r.name)} as PDF">PDF ${ic('download',14)}</button>`:'';
     const noteText = type==='Note' ? clean(r.content||'') : '';
     const noteSnippet=noteText && noteText!==r.name ? `<span class="resource-note-snippet">${esc(noteText.slice(0,125))}${noteText.length>125?'…':''}</span>` : '';
-    const primary=canPreview?`<button class="resource-name" data-action="open-resource" data-url="${esc(r.href)}" data-name="${esc(r.name)}" data-type="${esc(type)}" data-content="${esc(r.content||'')}" data-html="${esc(r.html||'')}"><strong>${esc(r.name==='Course note'?'Note':r.name)}</strong>${noteSnippet}<small>${esc(type==='Note'?'Read note':downloadsOnClick?'Download':type)}</small></button>`:`<div class="resource-name"><strong>${esc(r.name)}</strong></div>`;
+    const primary=canPreview?`<button class="resource-name" data-action="open-resource" data-url="${esc(r.href)}" data-name="${esc(r.name)}" data-type="${esc(type)}" data-content="${esc(r.content||'')}" data-html="${esc(r.html||'')}"><strong>${esc(r.name==='Course note'?'Note':r.name)}</strong>${noteSnippet}<small>${esc(type==='Note'?'Read note':openNative?'Open on eLearning':downloadsOnClick?'Download':type)}</small></button>`:`<div class="resource-name"><strong>${esc(r.name)}</strong></div>`;
     return `<div class="resource-row ${type==='Note'?'resource-note':''}"><div class="resource-icon">${ic(type==='Note'?'list':typeIcon(type),19)}</div>${primary}${pdfButton}<button class="resource-star ${starred?'selected':''}" data-action="star-resource" data-url="${esc(key)}" title="${starred?'Remove bookmark':'Bookmark material'}" aria-label="${starred?'Remove bookmark':'Bookmark material'}">${ic('star',17)}</button>${hasHref?`<button class="resource-open" data-action="open-resource" data-url="${esc(r.href)}" data-name="${esc(r.name)}" data-type="${esc(type)}" data-content="${esc(r.content||'')}" data-html="${esc(r.html||'')}" title="${downloadsOnClick?'Download':'Open'} ${esc(r.name)}" aria-label="${downloadsOnClick?'Download':'Open'} ${esc(r.name)}">${ic(downloadsOnClick?'download':'eye',18)}</button>`:''}</div>`;
   }
   function getRelatedCourseTabs() {
@@ -648,11 +654,11 @@
     return `<div class="crumb"><a href="${esc(COURSE_BASE)}">My courses</a>${ic('chevron',14)}<span>${esc(course.code||'Course')}</span></div>
       <div class="page-title course-title"><div><span class="page-kicker">${esc(course.code||'')}</span><h1>${esc(displayCourseLabel(course.label||course.name))}</h1><p>${total?`${total} resources`:'No resources detected'}</p></div><button class="pin-course ${fav?'selected':''}" data-action="favorite" data-id="${esc(course.id)}">${ic('star',17)} ${fav?'Pinned':'Pin'}</button></div>
       ${courseTabBar()}<div class="course-toolbar"><h2>Materials</h2><div class="section-commands"><label class="search resource-search">${ic('search',17)}<input type="search" data-input="resource-search" value="${esc(resourceQuery)}" placeholder="Search files and activities" aria-label="Find materials" /></label><button class="link-small" data-action="expandall">Expand all</button><button class="link-small" data-action="collapseall">Collapse</button></div></div>
-      <div class="resource-filters">${['All','File','Note','Assignment','Quiz','Forum'].map(t=>`<button class="resource-pill ${resourceFilter===t?'selected':''}" data-action="resource-filter" data-filter="${t}">${t==='All'?'All':t==='File'?'Files':t==='Note'?'Text':t==='Assignment'?'Assignments':t==='Quiz'?'Quizzes':'Forums'}</button>`).join('')}</div>
+      <div class="resource-filters">${['All','File','Folder','Note','Assignment','Quiz','Forum'].map(t=>`<button class="resource-pill ${resourceFilter===t?'selected':''}" data-action="resource-filter" data-filter="${t}">${t==='All'?'All':t==='File'?'Files':t==='Folder'?'Folders':t==='Note'?'Text':t==='Assignment'?'Assignments':t==='Quiz'?'Quizzes':'Forums'}</button>`).join('')}</div>
       ${!total?`<div class="recover resource-warning"><strong>Can't read course materials yet</strong><span>Moodle still has the original files and activities.</span><button data-action="native">Open original website ${ic('external',14)}</button></div>`:''}
       <div class="sections-area">${visibleSections.map(section=>{
         const index=section.index;
-        const matching=section.resources.filter(r=>(!resourceQuery||r.name.toLowerCase().includes(resourceQuery.toLowerCase()))&&(resourceFilter==='All'||r.type===resourceFilter));
+        const matching=section.resources.filter(r=>(!resourceQuery||r.name.toLowerCase().includes(resourceQuery.toLowerCase()))&&(resourceFilter==='All'||r.type===resourceFilter||(resourceFilter==='File'&&['Folder','Image','Media'].includes(r.type))));
         if((resourceQuery||resourceFilter!=='All')&&!matching.length) return '';
         const isOpen=(resourceQuery||resourceFilter!=='All')?true:(expanded.size===0?(section.current||index===0||section.resources.length>0):expanded.has(index));
         return `<section class="section-block ${section.current?'current-section':''}"><button class="section-toggle" aria-expanded="${isOpen}" data-action="section" data-index="${index}"><span class="section-label"><span class="section-arrow ${isOpen?'open':''}">${ic('chevron',15)}</span><strong>${esc(section.name)}</strong>${section.current?'<span class="current-mark">Current</span>':''}</span>${section.resources.length?`<span class="section-end">${section.resources.length}</span>`:''}</button>${isOpen?`<div class="section-resources">${matching.length?matching.map(resourceRow).join(''):`<div class="empty-section">Nothing posted yet</div>`}</div>`:''}</section>`;
@@ -756,7 +762,8 @@
   // A resource/view.php URL is not necessarily the file: Moodle can present external links
   // (e.g. an externally hosted PDF) within a small HTML page.
   const isDirectPdf = url => {try{return /\.pdf$/i.test(decodeURIComponent(new URL(url).pathname));}catch{return false;}};
-  const isDownloadFile = url => {try{return /\.(?:docx?|pptx?|xlsx?|odt|odp|ods|zip|rar|7z|csv|txt|rtf|epub)$/i.test(decodeURIComponent(new URL(url).pathname));}catch{return false;}};
+  const isDownloadFile = url => {if(globalThis.RLMoodleMaterials)return RLMoodleMaterials.downloadable(url);try{return /\.(?:docx?|pptx?|xlsx?|odt|odp|ods|zip|rar|7z|csv|txt|rtf|epub)$/i.test(decodeURIComponent(new URL(url).pathname));}catch{return false;}};
+  const mediaKindFrom=(url,mime='')=>globalThis.RLMoodleMaterials?.mediaKind(url,mime)||'';
   const inferredName = (url, label='Download') => {
     try {const part=decodeURIComponent(new URL(url).pathname.split('/').pop()||'');return /\.[a-z0-9]{2,6}$/i.test(part)?part:label;}
     catch{return label;}
@@ -802,11 +809,38 @@
     const original=source?`<a class="viewer-btn" href="${esc(source)}" target="_blank" rel="noopener noreferrer" title="Open original Moodle page">${ic('external',16)} <span>Original</span></a>`:'';
     return `<div class="viewer-backdrop" data-action="close-viewer"><section class="viewer-panel ${viewer?.mode==='text'&&!viewer.error?'viewer-compact':''}" role="dialog" aria-modal="true" aria-label="${esc(title)}" tabindex="-1"><div class="viewer-header"><div class="viewer-title">${ic(viewer?.mode==='pdf'?'file':'book',19)}<strong title="${esc(title)}">${esc(title)}</strong></div><div class="viewer-actions">${getButton}${launch}${original}<button class="viewer-close" data-action="close-viewer" aria-label="Close preview">${ic('close',20)}</button></div></div><div class="viewer-body">${body}</div></section></div>`;
   }
+
+  function renderMediaPreview(item) {
+    const url=esc(item.previewUrl||''),title=esc(item.title||'File');
+    const tag=item.mediaKind==='image'?'<img src="'+url+'" alt="'+title+'" loading="lazy">':
+      item.mediaKind==='audio'?'<audio controls preload="metadata" src="'+url+'"></audio>':
+      '<video controls preload="metadata" playsinline src="'+url+'"></video>';
+    return '<div class="material-media">'+tag+'<p>Having trouble viewing this file? Use Download or Original above.</p></div>';
+  }
+  function renderFolderContents(item) {
+    const files=item.files||[];
+    const zip=item.folderZip?'<button class="folder-zip" data-action="folder-zip" data-url="'+esc(item.folderZip)+'" data-name="'+esc(item.title||'Folder')+'.zip">'+ic('download',16)+' Download entire folder (ZIP)</button>':'';
+    if(!files.length)return '<div class="folder-empty">'+ic('folder',30)+'<strong>No files could be listed</strong><p>This folder might be empty, restricted or loaded dynamically.</p>'+zip+'<a href="'+esc(item.source)+'" target="_blank" rel="noopener noreferrer">Open folder on eLearning '+ic('external',15)+'</a></div>';
+    let previous='';
+    const list=files.map(file=>{
+      const heading=file.folder&&file.folder!==previous?'<h3 class="folder-path">'+ic('folder',15)+' '+esc(file.folder)+'</h3>':'';
+      previous=file.folder;
+      const kind=typeFrom(file.href,file.name);
+      const pdfKind=globalThis.RLInlinePdf?.typeFor(file.href,file.name);
+      const pdf=pdfKind?'<button class="folder-file-pdf" data-action="resource-pdf" data-url="'+esc(file.href)+'" data-name="'+esc(file.name)+'" title="Save as PDF">PDF '+ic('download',14)+'</button>':'';
+      const attrs=' data-url="'+esc(file.href)+'" data-name="'+esc(file.name)+'" data-type="'+esc(kind)+'"';
+      return heading+'<div class="folder-file-row"><span class="folder-file-icon">'+ic(typeIcon(kind),18)+'</span><button class="folder-file-name" data-action="open-resource"'+attrs+'>'+esc(file.name)+'</button>'+pdf+'<button class="folder-file-open" data-action="open-resource"'+attrs+' title="Open or download '+esc(file.name)+'" aria-label="Open '+esc(file.name)+'">'+ic('arrow',17)+'</button></div>';
+    }).join('');
+    return '<div class="folder-view"><div class="folder-view-top"><span>'+files.length+' file'+(files.length===1?'':'s')+'</span>'+zip+'</div>'+list+'</div>';
+  }
+
   function renderViewer() {
     shadow.querySelector('.viewer-backdrop')?.remove();
     if(!viewer)return;
     const body=viewer.status==='loading'?`<div class="viewer-skeleton"><i></i><span></span><span></span><span></span><span></span></div>`:
       viewer.error?`<div class="viewer-empty">${ic('external',23)}<strong>Cannot open this file</strong><p>${esc(viewer.error)}</p>${viewer.download?`<button class="btn-primary" data-action="viewer-download">${ic('download',17)} Download</button>`:''}${viewer.source?`<a href="${esc(viewer.source)}" target="_blank" rel="noopener noreferrer">Original website ${ic('arrow',15)}</a>`:''}</div>`:
+      viewer.mode==='folder'?renderFolderContents(viewer):
+      viewer.mode==='media'?renderMediaPreview(viewer):
       viewer.mode==='pdf'?`<iframe class="pdf-frame" title="PDF preview" src="${esc(viewer.previewUrl)}" referrerpolicy="no-referrer-when-downgrade"></iframe>`:
       `<div class="document-stack"><article class="document-text" dir="auto">${viewer.html?viewer.html:esc(viewer.text||viewer.title)}</article>${viewer.entries?.length?`<div class="announcement-links">${viewer.entries.map(entry=>`<button data-action="open-resource" data-url="${esc(entry.url)}" data-name="${esc(entry.title)}" data-type="Forum">${ic('book',16)}<span>${esc(entry.title)}</span>${ic('arrow',15)}</button>`).join('')}</div>`:''}</div>`;
     shadow.querySelector('.app')?.insertAdjacentHTML('beforeend',viewerShell(viewer.title,body,viewer.source,viewer.download||''));
@@ -845,6 +879,11 @@
     viewerTrigger=shadow.activeElement;
     viewer={title:name||'Material',source:url||'',download:'',status:'loading',mode:'text',text:'',html:richHtml};
     if(!url){viewer={...viewer,status:'ready',mode:'text',text:content||name,html:richHtml};renderViewer();return;}
+    if(globalThis.RLMoodleMaterials?.isNative(type)){
+      const target=validUrl(url);
+      if(target)window.open(target,'_blank','noopener,noreferrer');
+      closeViewer();return;
+    }
     if(type==='Quiz'||type==='Assignment'){
       viewer={...viewer,status:'ready',error:'Open the original website to complete this activity.'};renderViewer();return;
     }
@@ -853,6 +892,8 @@
       viewer={...viewer,status:'ready',mode:'pdf',previewUrl:url,download:url,fileName:inferredName(url,name+'.pdf')};
       renderViewer();return;
     }
+    const directMedia=mediaKindFrom(url);
+    if(directMedia){viewer={...viewer,status:'ready',mode:'media',mediaKind:directMedia,previewUrl:url,download:url,fileName:inferredName(url,name)};renderViewer();return;}
     if(isDownloadFile(url)){
       await downloadResource(url,inferredName(url,name));return;
     }
@@ -864,10 +905,20 @@
       if(!response.ok)throw new Error('The server could not open this file.');
       const contentType=(response.headers.get('Content-Type')||'').toLowerCase();
       let finalUrl=response.url||url;
+      if(/\/login\/(?:index\.php)?/.test(new URL(finalUrl).pathname))throw new Error('Please sign in to eLearning and try again.');
       let directFileName='';
       if(contentType.includes('text/html')){
         const html=await response.text();
         const page=new DOMParser().parseFromString(html,'text/html');
+        if((type==='Folder'||/\/mod\/folder\/view\.php/.test(new URL(url).pathname))&&globalThis.RLMoodleMaterials){
+          const folder=RLMoodleMaterials.folderData(page,finalUrl);
+          viewer={...viewer,status:'ready',mode:'folder',...folder};renderViewer();return;
+        }
+        if(type==='Page'||type==='Forum'){
+          const detail=page.querySelector('#region-main,.resourcecontent,main')||page.body;
+          const entries=[...detail.querySelectorAll('a[href*="/mod/forum/discuss.php"]')].slice(0,30).map(a=>({title:visibleText(a),url:validUrl(a.getAttribute('href'),finalUrl)})).filter(x=>x.title&&x.url);
+          viewer={...viewer,status:'ready',mode:'text',text:visibleText(detail)||content||'No content yet.',html:safeRichHtml(detail,finalUrl),entries};renderViewer();return;
+        }
         const link=linkedFileFromMoodle(page,finalUrl);
         if(link){
           const direct=link.href;
@@ -875,6 +926,8 @@
             viewer={...viewer,status:'ready',mode:'pdf',previewUrl:direct,download:direct,fileName:inferredName(direct,name+'.pdf')};
             renderViewer();return;
           }
+          const wrappedMedia=mediaKindFrom(direct);
+          if(wrappedMedia){viewer={...viewer,status:'ready',mode:'media',mediaKind:wrappedMedia,previewUrl:direct,download:direct,fileName:inferredName(direct,name)};renderViewer();return;}
           if(isDownloadFile(direct)){
             closeViewer();await downloadResource(direct,inferredName(direct,name));return;
           }
@@ -898,6 +951,8 @@
       const disposition=response.headers.get('Content-Disposition')||'';
       const dispositionName=contentDispositionName(disposition);
       let filename=dispositionName||inferredName(finalUrl,directFileName||name);
+      const mediaKind=mediaKindFrom(finalUrl,mime);
+      if(mediaKind){viewer={...viewer,status:'ready',mode:'media',mediaKind,previewUrl:finalUrl,download:finalUrl,fileName:filename};renderViewer();return;}
       const pdf=mime==='application/pdf'||isDirectPdf(finalUrl)||/\.pdf$/i.test(filename);
       if(pdf){
         // Same-origin PDFs can be previewed as a blob for Moodle protected links.
@@ -950,6 +1005,7 @@
     const button = event.target.closest('[data-action]');
     if (!button) return;
     const action = button.dataset.action;
+    if(action==='folder-zip'){await downloadResource(button.dataset.url,button.dataset.name);return;}
     if(action==='viewer-download'){
       if(viewer?.download)downloadResource(viewer.download,viewer.fileName||viewer.title,true);
       return;
@@ -1032,7 +1088,7 @@
         const player=panel.animate([{height:height+'px',opacity:1},{height:'0px',opacity:0}],{duration:240,easing:'cubic-bezier(.4,0,.2,1)'});
         player.onfinish=()=>panel.remove();
       } else if(!wasOpen){
-        const matching=target.resources.filter(r=>(!resourceQuery||r.name.toLowerCase().includes(resourceQuery.toLowerCase()))&&(resourceFilter==='All'||r.type===resourceFilter));
+        const matching=target.resources.filter(r=>(!resourceQuery||r.name.toLowerCase().includes(resourceQuery.toLowerCase()))&&(resourceFilter==='All'||r.type===resourceFilter||(resourceFilter==='File'&&['Folder','Image','Media'].includes(r.type))));
         const child=document.createElement('div');child.className='section-resources';child.innerHTML=matching.length?matching.map(resourceRow).join(''):'<div class="empty-section">Nothing posted yet</div>';
         button.after(child);
         if(motion) {
