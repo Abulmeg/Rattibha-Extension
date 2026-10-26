@@ -12,7 +12,7 @@ html='''<body><h1>CPE451-Introduction to Embedded Systems (All Sections)</h1><di
 <li class="activity"><a href="https://elearn.just.edu.jo/current/mod/resource/view.php?id=54">Samples.zip</a></li>
 <li class="activity"><a href="https://elearn.just.edu.jo/current/mod/resource/view.php?id=55">Lecture handout</a></li>
 <li class="activity"><a href="https://elearn.just.edu.jo/current/mod/page/view.php?id=56">More details</a></li>
-<li class="activity"><div class="activity-item modtype_folder"><strong>Supplementary folder</strong><div class="foldertree"><a href="/current/pluginfile.php/55/mod_folder/content/0/Week%203/supplement.pptx">supplement.pptx</a><a href="/current/pluginfile.php/55/mod_folder/content/0/Week%203/Notes.pdf">Notes.pdf</a></div></div></li>
+<li class="activity"><div class="activity-item modtype_folder"><strong>Supplementary folder</strong><div class="foldertree"><a href="https://elearn.just.edu.jo/current/pluginfile.php/55/mod_folder/content/0/Week%203/supplement.pptx">supplement.pptx</a><a href="https://elearn.just.edu.jo/current/pluginfile.php/55/mod_folder/content/0/Week%203/Notes.pdf">Notes.pdf</a></div></div></li>
 </section></div></body>'''
 
 async def main():
